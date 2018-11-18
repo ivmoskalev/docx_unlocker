@@ -11,8 +11,16 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path", help="path to docx")
+parser.add_argument("-r", "--recursive", action="store_true",
+                    help="recursive unlocked docx in path")
 args = parser.parse_args()
-print(args.path)
+if args.recursive:
+    print("Here will be recursive algorithm with \"{}\"".format(args.path))
+else:
+    if os.path.isdir:
+        print("Here will be warning about dir")
+    else:
+        print("Here will be unlock for {}".format(args.path))
 
 # FILE_NAME = '1521.122.06ДО Ч.3 - ВМ_v00.100155186390074'
 # DIR_NAME = os.path.dirname(os.path.abspath(FILE_NAME + '.docx'))
