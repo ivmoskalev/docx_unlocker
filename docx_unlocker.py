@@ -9,19 +9,9 @@ import os
 import shutil
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument("path", help="path to docx")
-parser.add_argument("-r", "--recursive", action="store_true",
-                    help="recursive unlocked docx in path")
-args = parser.parse_args()
-if args.recursive:
-    print("Here will be recursive algorithm with \"{}\"".format(args.path))
-else:
-    if os.path.isdir:
-        print("Here will be warning about dir")
-    else:
-        print("Here will be unlock for {}".format(args.path))
 
+def unlock(file_name : str):
+    print("{} unlocked".format(file_name))
 # FILE_NAME = '1521.122.06ДО Ч.3 - ВМ_v00.100155186390074'
 # DIR_NAME = os.path.dirname(os.path.abspath(FILE_NAME + '.docx'))
 # f_name = DIR_NAME + '\\@' + FILE_NAME + '.docx'
@@ -45,3 +35,21 @@ else:
 
 # os.rename(f_name + '.zip', f_name)      
 # shutil.rmtree(d_name)  
+   
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("path", help="path to docx")
+    parser.add_argument("-r", "--recursive", action="store_true",
+                        help="recursive unlocked docx in path")
+    args = parser.parse_args()
+    if args.recursive:
+        print("Here will be recursive algorithm with \"{}\"".format(args.path))
+    else:
+        if os.path.isdir(args.path):
+            print("Here will be warning about dir")
+        else:
+            unlock(args.path)
+
+if __name__ == "__main__":
+    main()
