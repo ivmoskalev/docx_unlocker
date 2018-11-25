@@ -8,6 +8,7 @@ Created on Wed Oct 24 10:41:48 2018
 import os
 import shutil
 import argparse
+import glob
 
 
 def unlock(file_name : str):
@@ -35,7 +36,7 @@ def unlock(file_name : str):
 
 # os.rename(f_name + '.zip', f_name)      
 # shutil.rmtree(d_name)  
-   
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -44,10 +45,30 @@ def main():
                         help="recursive unlocked docx in path")
     args = parser.parse_args()
     if args.recursive:
-        print("Here will be recursive algorithm with \"{}\"".format(args.path))
+        user_answer = input("Are you want to unlock all files in \"{}\" recursively? [y/n] ".format(os.path.abspath(args.path))) 
+        if str.lower(user_answer) == "y":
+            files = []
+            for _, _, filenames in os.walk(os.path.abspath(args.path)):
+                files.extend([os.path.abspath(x) for x in filenames if ".json"in x])
+            if files != []:
+                for f in files:
+                    unlock(f)
+            else:
+                print("Do not exist suitable files")
     else:
         if os.path.isdir(args.path):
-            print("Here will be warning about dir")
+            user_answer = input("Are you want to unlock all files in \"{}\"? [y/n] ".format(os.path.abspath(args.path))) 
+            if str.lower(user_answer) == "y":
+                files = []
+                for _, _, filenames in os.walk(os.path.abspath(args.path)):
+                    files.extend([os.path.abspath(x) for x in filenames if ".json"in x])
+                    break
+                if files != []:
+                    for f in files:
+                        unlock(f)
+                else:
+                    print("Do not exist suitable files")
+
         else:
             unlock(args.path)
 
