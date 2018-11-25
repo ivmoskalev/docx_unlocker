@@ -8,35 +8,27 @@ Created on Wed Oct 24 10:41:48 2018
 import os
 import shutil
 import argparse
-import glob
 
 
 def unlock(file_name : str):
-    print("{} unlocked".format(file_name))
-# FILE_NAME = '1521.122.06ДО Ч.3 - ВМ_v00.100155186390074'
-# DIR_NAME = os.path.dirname(os.path.abspath(FILE_NAME + '.docx'))
-# f_name = DIR_NAME + '\\@' + FILE_NAME + '.docx'
-# d_name = DIR_NAME + '\\' + FILE_NAME        
-
-
-# shutil.unpack_archive(FILE_NAME + '.docx', d_name, 'zip')
-
-# inFile = open(d_name + '\\word\\settings.xml', 'r')
-# data = inFile.readlines()
-# inFile.close()
-# start = data[1].find('<w:documentProtection')
-# end = data[1].find('/>', start)
-# data[1] = data[1].replace(data[1][start:end+2], '')
-# outFile = open(d_name + '\\word\\settings.xml', 'w')
-# outFile.writelines(data)
-# outFile.close()
-
-
-# shutil.make_archive(f_name, 'zip', d_name)
-
-# os.rename(f_name + '.zip', f_name)      
-# shutil.rmtree(d_name)  
-
+    f_name = os.path.dirname(file_name) + '\\@' + os.path.basename(file_name)
+    shutil.unpack_archive(file_name, file_name[:-5], 'zip')
+    inFile = open(file_name[:-5] + '\\word\\settings.xml', 'r')
+    data = inFile.readlines()
+    inFile.close()
+    start = data[1].find('<w:documentProtection')
+    if start > 0:
+        end = data[1].find('/>', start)
+        data[1] = data[1].replace(data[1][start:end+2], '')
+        outFile = open(file_name[:-5] + '\\word\\settings.xml', 'w')
+        outFile.writelines(data)
+        outFile.close()
+        shutil.make_archive(f_name, 'zip', file_name[:-5])
+        os.rename(f_name + '.zip', f_name)  
+        print("{} unlocked".format(file_name))
+    else:
+        print("File \"{}\" isn't locked".format(file_name))
+    shutil.rmtree(file_name[:-5])  
 
 def main():
     parser = argparse.ArgumentParser()
@@ -48,8 +40,9 @@ def main():
         user_answer = input("Are you want to unlock all files in \"{}\" recursively? [y/n] ".format(os.path.abspath(args.path))) 
         if str.lower(user_answer) == "y":
             files = []
-            for _, _, filenames in os.walk(os.path.abspath(args.path)):
-                files.extend([os.path.abspath(x) for x in filenames if ".json"in x])
+            print(os.path.abspath(args.path))
+            for root, _, filenames in os.walk(os.path.abspath(args.path)):
+                files.extend([root + "\\" + file for file in filenames if ".docx" in file])
             if files != []:
                 for f in files:
                     unlock(f)
@@ -60,17 +53,16 @@ def main():
             user_answer = input("Are you want to unlock all files in \"{}\"? [y/n] ".format(os.path.abspath(args.path))) 
             if str.lower(user_answer) == "y":
                 files = []
-                for _, _, filenames in os.walk(os.path.abspath(args.path)):
-                    files.extend([os.path.abspath(x) for x in filenames if ".json"in x])
+                for root, _, filenames in os.walk(os.path.abspath(args.path)):
+                    files.extend([root + "\\" + file for file in filenames if ".docx" in file])
                     break
                 if files != []:
                     for f in files:
                         unlock(f)
                 else:
                     print("Do not exist suitable files")
-
         else:
-            unlock(args.path)
+            unlock(os.path.abspath(args.path))
 
 if __name__ == "__main__":
     main()
