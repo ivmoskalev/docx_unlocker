@@ -9,18 +9,22 @@ import os
 import shutil
 import argparse
 
+if os.name == 'nt':
+    FD = '\\'
+else:
+    FD = '/'
 
 def unlock(file_name : str):
-    f_name = os.path.dirname(file_name) + '\\@' + os.path.basename(file_name)
+    f_name = os.path.dirname(file_name) + FD + '@' + os.path.basename(file_name)
     shutil.unpack_archive(file_name, file_name[:-5], 'zip')
-    inFile = open(file_name[:-5] + '\\word\\settings.xml', 'r')
+    inFile = open(file_name[:-5] + FD + 'word' + FD +  'settings.xml', 'r')
     data = inFile.readlines()
     inFile.close()
     start = data[1].find('<w:documentProtection')
     if start > 0:
         end = data[1].find('/>', start)
         data[1] = data[1].replace(data[1][start:end+2], '')
-        outFile = open(file_name[:-5] + '\\word\\settings.xml', 'w')
+        outFile = open(file_name[:-5] + FD + 'word' + FD + 'settings.xml', 'w')
         outFile.writelines(data)
         outFile.close()
         shutil.make_archive(f_name, 'zip', file_name[:-5])
@@ -42,7 +46,7 @@ def main():
             files = []
             print(os.path.abspath(args.path))
             for root, _, filenames in os.walk(os.path.abspath(args.path)):
-                files.extend([root + "\\" + file for file in filenames if ".docx" in file])
+                files.extend([root + FD + file for file in filenames if ".docx" in file])
             if files != []:
                 for f in files:
                     unlock(f)
@@ -54,7 +58,7 @@ def main():
             if str.lower(user_answer) == "y":
                 files = []
                 for root, _, filenames in os.walk(os.path.abspath(args.path)):
-                    files.extend([root + "\\" + file for file in filenames if ".docx" in file])
+                    files.extend([root + FD + file for file in filenames if ".docx" in file])
                     break
                 if files != []:
                     for f in files:
